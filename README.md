@@ -1,6 +1,6 @@
 # Teddy Land Board Game
 
-A board game prototype built with React + Vite. All game logic lives in `src/App.jsx`.
+A board game prototype built with React + Vite.
 
 ## Running the app
 
@@ -10,6 +10,24 @@ npm run dev
 ```
 
 Then open the local URL Vite prints (e.g. `http://localhost:5173/`).
+
+## Project structure
+
+```
+src/
+  deck.js          Card/deck logic (plain JS, no React): cardRules,
+                   createDeck, shuffleDeck, playerColorOptions.
+  SetupScreen.jsx  "How many players?" screen.
+  ColorScreen.jsx  "Pick your color" screen.
+  GameScreen.jsx   The game board (cards, monsters, draw/discard/end-turn).
+  App.jsx          Owns all game state and the rules, and chooses which
+                   screen to render.
+```
+
+`App.jsx` holds the state and game logic, then hands each screen the data
+and actions it needs via **props**. The screen components are presentational
+— they display what they're given and report clicks back up (`onDraw`,
+`onDiscard`, `onEndTurn`, etc.); they hold no state of their own.
 
 ## How the game works
 
@@ -58,6 +76,11 @@ Then open the local URL Vite prints (e.g. `http://localhost:5173/`).
   before ending your turn.
 - **Immutable state updates** throughout (new arrays via `slice`/`filter`/spread
   instead of mutating state in place).
+- **Refactor — deck module**: card/deck logic extracted from `App.jsx` into
+  `src/deck.js`.
+- **Refactor — screen components**: the three screens split into
+  `SetupScreen`, `ColorScreen`, and `GameScreen`, with `App.jsx` reduced to
+  owning state and routing between screens via props.
 
 ## Project notes (Vite template)
 

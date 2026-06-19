@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { createDeck, shuffleDeck, playerColorOptions } from './deck';
+import { createDeck, shuffleDeck } from './deck';
+import SetupScreen from './SetupScreen';
+import ColorScreen from './ColorScreen';
+import GameScreen from './GameScreen';
 
 function App() {
   // numPlayers is null until the player count is chosen on the setup screen.
@@ -97,84 +100,33 @@ function App() {
     setHasDrawn(false); // fresh turn for the next player — they may draw again
   };
 
+  // App is now a "traffic cop": it owns the state and decides which screen to
+  // show, handing each screen the data and actions it needs via props.
+
   // Setup screen: choose the number of players before the game starts.
   if (numPlayers === null) {
-    return (
-      <div>
-        <h1>Teddy Land</h1>
-        <h2>Welcome to Teddy Land!</h2>
-        <h3>Board Game Prototype</h3>
-        <p>How many players? (1–5)</p>
-        {[1, 2, 3, 4, 5].map((count) => (
-          <button key={count} onClick={() => choosePlayerCount(count)}>
-            {count} {count === 1 ? 'Player' : 'Players'}
-          </button>
-        ))}
-      </div>
-    );
+    return <SetupScreen onChoose={choosePlayerCount} />;
   }
 
   // Color-selection screen: each player picks a color before the deal.
   if (playerColors.length < numPlayers) {
-    return (
-      <div>
-        <h1>Teddy Land</h1>
-        <p>Player {playerColors.length + 1}, pick your color:</p>
-        {playerColorOptions.map((color) => (
-          <button
-            key={color}
-            onClick={() => pickColor(color)}
-            disabled={playerColors.includes(color)} // can't pick a color already taken
-          >
-            {color}
-          </button>
-        ))}
-        <p>Taken: {playerColors.length > 0 ? playerColors.join(', ') : '(none yet)'}</p>
-      </div>
-    );
+    return <ColorScreen playerColors={playerColors} onPick={pickColor} />;
   }
 
+  // The game board.
   return (
-    <div>
-      <h1>Teddy Land</h1>
-      <h2>Welcome to Teddy Land!</h2>
-      <h3>Board Game Prototype</h3>
-      <p>Deck of Cards: {deck.length}</p>
-      {hands.map((hand, i) => (
-        <div key={i}>
-          <strong>Player {i + 1} ({playerColors[i]}):</strong>{' '}
-          {hand.length === 0 && '(empty)'}
-          {i === currentPlayer
-            ? // current player's cards are clickable to discard
-              hand.map((card, cardIndex) => (
-                <button
-                  key={cardIndex}
-                  onClick={() => discardCard(cardIndex)}
-                  disabled={hand.length <= 6}
-                >
-                  {card.color}
-                </button>
-              ))
-            : // other players' cards are just text
-              hand.map((card) => card.color).join(', ')}
-        </div>
-      ))}
-      <p>Discard Pile: {discardPile.length}</p>
-      <p>
-        <strong>Monsters:</strong>{' '}
-        {monsters.length > 0 ? monsters.map((card) => card.color).join(', ') : '(none yet)'}
-      </p>
-      <p>It's Player {currentPlayer + 1}'s turn.</p>
-      {hands[currentPlayer].length > 6 && (
-        <p>You have {hands[currentPlayer].length} cards — click cards to discard down to 6 before ending your turn.</p>
-      )}
-      <button onClick={drawCard} disabled={deck.length === 0 || hasDrawn}>
-        Draw Card
-      </button>
-      <button onClick={endTurn} disabled={hands[currentPlayer].length > 6}>
-        End Turn
-      </button>
-    </div>
+    <GameScreen
+      deck={deck}
+      hands={hands}
+      discardPile={discardPile}
+      monsters={monsters}
+      currentPlayer={currentPlayer}
+      playerColors={playerColors}
+      hasDrawn={hasDrawn}
+      onDraw={drawCard}
+      onDiscard={discardCard}
+      onEndTurn={endTurn}
+    />
   );
 }
 
