@@ -1,38 +1,5 @@
 import { useState } from 'react';
-
-const cardRules = [
-  { color: 'red', count: 12 },
-  { color: 'blue', count: 12 },
-  { color: 'green', count: 12 },
-  { color: 'yellow', count: 12 },
-  { color: 'purple', count: 12 },
-  { color: 'white', count: 10 },
-  { color: 'black', count: 10 },
-];
-
-// Colors a player can be tied to: every card color except black and white.
-const playerColorOptions = cardRules
-  .map((rule) => rule.color)
-  .filter((color) => color !== 'black' && color !== 'white');
-
-function createDeck() {
-  const deck = [];
-  for (const rule of cardRules) {
-    for (let i = 0; i < rule.count; i++) {
-      deck.push({ color: rule.color });
-    }
-  }
-  return deck;
-}
-
-function shuffleDeck(originalDeck) {
-  const deck = [...originalDeck];
-  for (let i = deck.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [deck[i], deck[j]] = [deck[j], deck[i]];
-  }
-  return deck;
-}
+import { createDeck, shuffleDeck, playerColorOptions } from './deck';
 
 function App() {
   // numPlayers is null until the player count is chosen on the setup screen.
